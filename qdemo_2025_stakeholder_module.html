@@ -109,32 +109,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </head>
 <body>
 
-<div id="pw-gate" style="position:fixed;inset:0;background:#f5f4f0;display:flex;align-items:center;justify-content:center;z-index:9999">
-  <div style="background:#fff;border:0.5px solid rgba(0,0,0,.12);border-radius:14px;padding:2rem 2.5rem;width:320px;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,.07)">
-    <div style="font-size:15px;font-weight:500;color:#2c2c2a;margin-bottom:6px">QDemo Report</div>
-    <div style="font-size:12px;color:#888780;margin-bottom:1.25rem">Enter the password to continue. Reach out to Aaron Lewis for the password.</div>
-    <input id="pw-input" type="password" placeholder="Password"
-      style="width:100%;padding:9px 12px;border:1px solid #dddbd4;border-radius:8px;font-size:13px;outline:none;color:#2c2c2a;margin-bottom:.65rem"
-      onkeydown="if(event.key==='Enter')checkPw()">
-    <div id="pw-err" style="font-size:11px;color:#a32d2d;margin-bottom:.65rem;display:none">Incorrect password</div>
-    <button onclick="checkPw()"
-      style="width:100%;padding:9px;background:#185fa5;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer">
-      Continue
-    </button>
-  </div>
-</div>
-<script>
-function checkPw() {
-  const val = document.getElementById('pw-input').value;
-  if (val === 'qualtrics123') {
-    document.getElementById('pw-gate').style.display = 'none';
-  } else {
-    document.getElementById('pw-err').style.display = 'block';
-    document.getElementById('pw-input').focus();
-  }
-}
-document.addEventListener('DOMContentLoaded', () => document.getElementById('pw-input').focus());
-</script>
 
 <div class="page">
 
