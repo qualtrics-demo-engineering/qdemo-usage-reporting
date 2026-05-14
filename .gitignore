@@ -1,0 +1,30 @@
+# Environment / credentials
+.env
+*.env
+
+# Raw data exports (contain individual rep data)
+qdemo-usage-records/
+ae-qr-leaderboard-records/
+
+# Excel analysis files (contain individual rep data)
+*.xlsx
+*.xls
+~$*
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+*.egg-info/
+
+# Playwright / browser artifacts
+playwright-report/
+test-results/
