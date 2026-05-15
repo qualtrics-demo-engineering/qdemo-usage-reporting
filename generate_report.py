@@ -213,6 +213,19 @@ def spearman_rho(xs, ys):
     rx, ry = ranks(xs), ranks(ys)
     return pearson_r(rx, ry)
 
+def linear_regression(xs, ys):
+    """OLS linear regression — returns (slope, intercept) or (None, None)."""
+    n = len(xs)
+    if n < 3:
+        return None, None
+    mx, my = sum(xs)/n, sum(ys)/n
+    num   = sum((x-mx)*(y-my) for x,y in zip(xs,ys))
+    denom = sum((x-mx)**2 for x in xs)
+    if denom == 0:
+        return None, None
+    slope = num / denom
+    return slope, my - slope * mx
+
 def bucket_pcts(group):
     """Returns list of (pct, n) per bucket for a group of reps."""
     counts = [0]*6
@@ -261,6 +274,14 @@ print(f"\nGlobal: n={glob['n']} pct={glob['pct']}% r={glob['r']} rho={glob['rho'
 
 glob_bkt = bucket_pcts(reps)
 print(f"Global buckets: {glob_bkt}")
+
+# Linear regression for scatter plot
+scatter_xs = [r['logins'] for r in reps]
+scatter_ys = [r['bpa'] for r in reps]
+reg_slope, reg_intercept = linear_regression(scatter_xs, scatter_ys)
+scatter_max_x = max(scatter_xs) if scatter_xs else 150
+print(f"Regression: slope={reg_slope:.6f}  intercept={reg_intercept:.6f}")
+print(f"Interpretation: each 10 logins → {reg_slope*10:.4f} BPA ({reg_slope*1000:.2f} pp per login)")
 
 # KPI: usage lift (61+ vs 1-30)
 glob_lift = lift(reps)
@@ -532,6 +553,19 @@ def js_cu_lift_tipped(lmap):
         lines.append(f"  {json.dumps(k)}: {js_lift_tipped(v)}")
     return '{\n' + ',\n'.join(lines) + '\n}'
 
+# Scatter data (all individual reps)
+scatter_json = json.dumps([
+    {
+        'x': r['logins'],
+        'y': round(r['bpa'], 4),
+        'nm': r['name'],
+        'ti': r['tier'],
+        'rg': r['region'],
+        'aq': 1 if r['at_quota'] else 0,
+    }
+    for r in reps
+])
+
 # Region card sig text
 def region_sig_html(reg, s):
     rho = s['rho']
@@ -779,13 +813,36 @@ body{{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgro
     <!-- TAB: MAIN FINDING -->
     <div id="tab-finding" class="panel active">
       <p class="section-lede">Reps with more annual QDemo logins hit quota at a meaningfully higher rate. The 100+ login bucket reaches {qr_100plus}% at quota. Reps with 61+ logins hit quota at <strong>{bkt61_pct}% — {lift_vs_1_5}× the rate of light users</strong> (1–5 logins, {glob_bkt[0][0]}%). The rank-order correlation is statistically significant globally: <strong>Spearman ρ = {global_rho}, p &lt; 0.001</strong>. Spearman is used alongside Pearson (r = {global_r}) because login counts are right-skewed — a small number of reps log very high counts, making rank-based correlation the more robust measure.</p>
-      <div class="legend">
-        <span><span class="swatch" style="background:#1d9e75"></span>≥ 35% at quota</span>
-        <span><span class="swatch" style="background:#ba7517"></span>20–35%</span>
-        <span><span class="swatch" style="background:#a32d2d"></span>&lt; 20%</span>
+      <div class="tier-toggle" style="margin-bottom:1rem">
+        <button class="tier-btn active" onclick="switchFindingView('bar',this)">Bar chart</button>
+        <button class="tier-btn" onclick="switchFindingView('scatter',this)">Scatter plot</button>
       </div>
-      <div class="chart-wrap"><canvas id="bucketChart" role="img" aria-label="Bar chart showing percent of reps at quota by annual QDemo login bucket globally."></canvas></div>
-      <p class="chart-note">n = {n_reps} matched reps · full year {YEAR} · Spearman ρ = {global_rho}, p &lt; 0.001</p>
+      <div id="finding-bar">
+        <div class="legend">
+          <span><span class="swatch" style="background:#1d9e75"></span>≥ 35% at quota</span>
+          <span><span class="swatch" style="background:#ba7517"></span>20–35%</span>
+          <span><span class="swatch" style="background:#a32d2d"></span>&lt; 20%</span>
+        </div>
+        <div class="chart-wrap"><canvas id="bucketChart" role="img" aria-label="Bar chart showing percent of reps at quota by annual QDemo login bucket globally."></canvas></div>
+        <p class="chart-note">n = {n_reps} matched reps · full year {YEAR} · Spearman ρ = {global_rho}, p &lt; 0.001</p>
+      </div>
+      <div id="finding-scatter" style="display:none">
+        <div class="callout blue" style="align-items:flex-start;margin-bottom:1rem">
+          <i class="ti ti-function" style="margin-top:2px"></i>
+          <span>
+            <strong>Regression line:</strong>&nbsp; BPA&nbsp;=&nbsp;<strong>{reg_slope:.4f}</strong>&nbsp;&times;&nbsp;logins&nbsp;+&nbsp;<strong>{reg_intercept:.3f}</strong>&nbsp;&nbsp;
+            <span style="opacity:.75">(Pearson r&nbsp;=&nbsp;{global_r}, Spearman&nbsp;&rho;&nbsp;=&nbsp;{global_rho})</span><br>
+            <span style="font-size:12px;opacity:.85">Every <strong>10 additional logins</strong> is associated with roughly <strong>+{reg_slope*10:.3f} BPA</strong> (~{reg_slope*1000:.1f} percentage points of quota attainment). Use the slope to estimate how a usage shift for a cohort might translate to attainment at the population level.</span>
+          </span>
+        </div>
+        <div class="legend">
+          <span><span class="swatch" style="background:rgba(15,110,86,0.6)"></span>At/above quota</span>
+          <span><span class="swatch" style="background:rgba(186,117,23,0.5)"></span>Below quota</span>
+          <span><span class="swatch" style="background:#185fa5;height:3px;width:18px;border-radius:2px"></span>OLS regression</span>
+        </div>
+        <div class="chart-wrap" style="height:340px"><canvas id="scatterChartMain" role="img" aria-label="Scatter plot of annual QDemo logins versus billing pace attainment with OLS regression line."></canvas></div>
+        <p class="chart-note">Each point = one matched AE/ES rep · hover for rep detail · BPA capped at 3.0 · full year {YEAR}</p>
+      </div>
     </div>
 
     <!-- TAB: CORP vs ENTERPRISE (hidden — content merged into Segment & Tier) -->
@@ -1210,6 +1267,116 @@ tierChartInstance = new Chart(document.getElementById('tierChart'), {{
     }}
   }}
 }});
+
+// ---- SCATTER PLOT ----
+const scatterRaw = {scatter_json};
+const regSlope     = {reg_slope:.8f};
+const regIntercept = {reg_intercept:.8f};
+const scatterMaxX  = {scatter_max_x};
+
+const atQuotaPts    = scatterRaw.filter(d => d.aq === 1).map(d => ({{x: d.x, y: Math.min(d.y, 3.0), nm: d.nm, ti: d.ti, rg: d.rg, rawY: d.y}}));
+const belowQuotaPts = scatterRaw.filter(d => d.aq === 0).map(d => ({{x: d.x, y: Math.min(d.y, 3.0), nm: d.nm, ti: d.ti, rg: d.rg, rawY: d.y}}));
+
+// Regression line endpoints (x = 0 to scatterMaxX)
+const regLineData = [
+  {{x: 0,            y: Math.max(0, regIntercept)}},
+  {{x: scatterMaxX,  y: regSlope * scatterMaxX + regIntercept}},
+];
+
+function makeScatterChart(canvasId) {{
+  return new Chart(document.getElementById(canvasId), {{
+    type: 'scatter',
+    data: {{
+      datasets: [
+        {{
+          label: 'At quota (≥100%)',
+          data: atQuotaPts,
+          backgroundColor: 'rgba(15,110,86,0.45)',
+          pointRadius: 4.5,
+          pointHoverRadius: 7,
+          pointStyle: 'circle',
+        }},
+        {{
+          label: 'Below quota',
+          data: belowQuotaPts,
+          backgroundColor: 'rgba(186,117,23,0.38)',
+          pointRadius: 4,
+          pointHoverRadius: 7,
+          pointStyle: 'circle',
+        }},
+        {{
+          type: 'line',
+          label: 'OLS regression',
+          data: regLineData,
+          borderColor: '#185fa5',
+          borderWidth: 2.5,
+          pointRadius: 0,
+          pointHoverRadius: 0,
+          fill: false,
+          tension: 0,
+          order: 0,
+        }},
+      ]
+    }},
+    options: {{
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: {{ duration: 600 }},
+      plugins: {{
+        legend: {{
+          display: true,
+          position: 'top',
+          labels: {{ font: {{size: 11}}, color: '#5f5e5a', boxWidth: 10, padding: 14 }},
+          onClick: () => {{}},
+        }},
+        tooltip: {{
+          callbacks: {{
+            label: ctx => {{
+              if (ctx.datasetIndex === 2) return null;
+              const d = ctx.raw;
+              const clipped = d.rawY > 3.0 ? ' (capped)' : '';
+              return ` ${{d.nm}}  ·  ${{d.ti}} / ${{d.rg}}  ·  ${{d.x}} logins  ·  BPA ${{d.rawY.toFixed(2)}}${{clipped}}`;
+            }},
+            title: () => null,
+          }},
+          backgroundColor: 'rgba(44,44,42,0.92)',
+          padding: 9,
+          bodyFont: {{size: 11.5}},
+          bodyColor: '#e8e6e0',
+        }},
+      }},
+      scales: {{
+        x: {{
+          title: {{ display: true, text: 'Annual QDemo logins', font: {{size: 11}}, color: '#888780', padding: {{top: 6}} }},
+          min: 0,
+          ticks: {{ font: {{size: 11}}, color: '#888780', maxTicksLimit: 10 }},
+          grid: {{ color: 'rgba(136,135,128,.12)' }},
+        }},
+        y: {{
+          title: {{ display: true, text: 'Billing Pace Attainment', font: {{size: 11}}, color: '#888780', padding: {{bottom: 6}} }},
+          min: 0,
+          max: 3.0,
+          ticks: {{
+            callback: v => (v * 100).toFixed(0) + '%',
+            font: {{size: 11}},
+            color: '#888780',
+            stepSize: 0.5,
+          }},
+          grid: {{ color: 'rgba(136,135,128,.12)' }},
+        }},
+      }},
+    }},
+  }});
+}}
+
+makeScatterChart('scatterChartMain');
+
+function switchFindingView(type, btn) {{
+  document.querySelectorAll('.tier-toggle .tier-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('finding-bar').style.display     = type === 'bar'     ? '' : 'none';
+  document.getElementById('finding-scatter').style.display = type === 'scatter' ? '' : 'none';
+}}
 </script>
 </body>
 </html>"""
