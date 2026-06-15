@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QDemo Usage &amp; Quota Attainment by Tenure — 2025</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#2c2c2a;min-height:100vh;padding:2rem 1rem}
+.page{max-width:1060px;margin:0 auto}
+.page-header{margin-bottom:1.4rem}
+.studytag{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#0f6e56;background:#e1f5ee;border:0.5px solid #9fe1cb;border-radius:6px;padding:3px 9px;margin-bottom:10px}
+.page-header h1{font-size:22px;font-weight:500;color:#2c2c2a;margin-bottom:4px}
+.page-header p{font-size:13px;color:#5f5e5a}
+.hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:1.4rem}
+.kpi{background:#fff;border-radius:10px;padding:16px 18px;border:0.5px solid rgba(0,0,0,.1)}
+.kpi-label{font-size:11px;color:#888780;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+.kpi-val{font-size:28px;font-weight:500;line-height:1;color:#2c2c2a}
+.kpi-sub{font-size:11px;color:#b4b2a9;margin-top:5px}
+.kpi.accent .kpi-val{color:#0f6e56}
+.kpi.flat .kpi-val{color:#888780}
+.finding-hero{background:#0f6e56;border-radius:14px;padding:30px 32px;margin-bottom:1rem;color:#fff;display:flex;align-items:center;gap:18px}
+.finding-hero i{font-size:34px;flex-shrink:0;opacity:.92}
+.finding-hero .ftext{font-size:25px;font-weight:600;line-height:1.25;letter-spacing:-.01em}
+.finding-sub{font-size:13px;color:#5f5e5a;margin:0 2px 1.4rem;line-height:1.55}
+@media(max-width:560px){.finding-hero{padding:22px 20px;gap:12px}.finding-hero .ftext{font-size:20px}.finding-hero i{font-size:26px}}
+.card{background:#fff;border-radius:12px;border:0.5px solid rgba(0,0,0,.1);padding:1.25rem 1.5rem;margin-bottom:1rem}
+.tabs{display:flex;gap:2px;border-bottom:1px solid #e8e6e0;margin-bottom:1.25rem;overflow-x:auto}
+.tab{padding:9px 16px;font-size:13px;color:#888780;cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s;white-space:nowrap;flex-shrink:0}
+.tab.active{color:#2c2c2a;border-bottom:2px solid #1d9e75;font-weight:500}
+.tab:hover:not(.active){color:#2c2c2a}
+.panel{display:none}.panel.active{display:block}
+.chart-wrap{position:relative;width:100%;height:320px;margin-bottom:.5rem}
+.chart-note{font-size:11px;color:#b4b2a9;text-align:center;margin-top:.35rem}
+.section-lede{font-size:13px;color:#5f5e5a;margin-bottom:1rem;line-height:1.6}
+h2.sec{font-size:15px;font-weight:600;margin:1.1rem 0 .5rem;color:#2c2c2a}
+.tier-table{width:100%;border-collapse:collapse;font-size:13px}
+.tier-table th{text-align:left;font-weight:500;font-size:11px;color:#888780;padding:7px 10px;border-bottom:1px solid #e8e6e0;text-transform:uppercase;letter-spacing:.04em}
+.tier-table td{padding:10px 10px;border-bottom:0.5px solid #f1efe8;color:#2c2c2a}
+.tier-table tr:last-child td{border-bottom:none}
+.tier-table tr.hot td{background:#f3fbf8}
+.callout{background:#e1f5ee;border-radius:8px;padding:11px 14px;font-size:13px;color:#085041;margin-bottom:1rem;display:flex;align-items:flex-start;gap:8px;line-height:1.55}
+.callout i{flex-shrink:0;margin-top:1px;font-size:18px}
+.callout.amber{background:#faeeda;color:#633806}
+.callout.blue{background:#e4f0fb;color:#0e3f73}
+.seg-compare{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem}
+.seg-card{border-radius:10px;padding:14px 16px;border:0.5px solid rgba(0,0,0,.1)}
+.seg-card.corp{background:#faeeda;border-color:#fac775}
+.seg-card.ent{background:#eef4fb;border-color:#b5d4f4}
+.seg-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.seg-card.corp .seg-title{color:#854f0b}.seg-card.ent .seg-title{color:#185fa5}
+.seg-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;font-size:12px}
+.seg-row .lbl{color:#5f5e5a}.seg-row .val{font-weight:500;color:#2c2c2a;font-size:13px}
+.insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.insight-card{background:#fff;border:0.5px solid rgba(0,0,0,.1);border-radius:12px;padding:1rem 1.25rem}
+.insight-card.wide{grid-column:1/-1}
+.insight-card.highlight{border-color:#1d9e75;border-width:1.5px;background:#f7fdfb}
+.insight-icon{font-size:20px;color:#185fa5;margin-bottom:8px}
+.insight-title{font-size:13px;font-weight:600;margin-bottom:4px}
+.insight-body{font-size:12px;color:#5f5e5a;line-height:1.55}
+.trend-badge{display:inline-block;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:600;white-space:nowrap}
+.trend-pos-strong{background:#e1f5ee;color:#0f6e56}
+.trend-pos{background:#edf7f3;color:#2d7a52}
+.trend-flat{background:#f1efe8;color:#888780}
+.trend-neg-strong{background:#fcebeb;color:#a32d2d}
+.small-note{font-size:11px;color:#b4b2a9;margin-top:8px;font-style:italic}
+.collapse-detail{border:0.5px solid #e8e6e0;border-radius:10px;margin-top:1.4rem;background:#fcfbf9;overflow:hidden}
+.collapse-detail>summary{cursor:pointer;padding:13px 16px;font-size:13px;font-weight:600;color:#2c2c2a;list-style:none;display:flex;align-items:center;gap:8px;user-select:none}
+.collapse-detail>summary::-webkit-details-marker{display:none}
+.collapse-detail>summary i{transition:transform .2s;color:#888780;font-size:16px}
+.collapse-detail[open]>summary{border-bottom:1px solid #e8e6e0}
+.collapse-detail[open]>summary i{transform:rotate(90deg)}
+.collapse-detail .cd-body{padding:1.1rem 1.5rem 1.3rem}
+.collapse-detail .cd-body .section-lede:first-child{margin-top:0}
+@media(max-width:560px){.seg-compare,.insight-grid{grid-template-columns:1fr}.insight-card.wide{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="studytag">QDemo &amp; quota attainment · full year 2025</span>
+    <h1>QDemo usage &amp; quota attainment, by rep tenure</h1>
+  </div>
+
+  <div class="finding-hero">
+    <i class="ti ti-target"></i>
+    <span class="ftext">Newer reps who use QDemo more hit quota more often.</span>
+  </div>
+  <p class="finding-sub">The effect is strongest in a rep's first ~two years and disappears for veterans (4+ yrs). Based on 451 AE/ES reps · full year 2025 · metric: Total Attainment.</p>
+
+  <div class="hero">
+    <div class="kpi accent"><div class="kpi-label">Newer reps (≤2 yrs)</div><div class="kpi-val">30→47%</div><div class="kpi-sub">at quota: low vs high QDemo usage</div></div>
+    <div class="kpi accent"><div class="kpi-label">In your first 2 years</div><div class="kpi-val">58% likelier</div><div class="kpi-sub">to hit your number with 31+ QDemo logins/yr vs ≤5</div></div>
+    <div class="kpi flat"><div class="kpi-label">Veterans (4+ yrs)</div><div class="kpi-val">No lift</div><div class="kpi-sub">ρ 0.03 · usage doesn't move quota</div></div>
+  </div>
+
+  <div class="card">
+    <div class="tabs" role="tablist">
+      <button class="tab active" role="tab" onclick="showTab('finding',this)">Main finding</button>
+      <button class="tab" role="tab" onclick="showTab('interview',this)">Interview evidence</button>
+      <button class="tab" role="tab" onclick="showTab('method',this)">Method &amp; takeaways</button>
+    </div>
+
+    <!-- MAIN FINDING -->
+    <div id="tab-finding" class="panel active">
+      <p class="section-lede">Each line is a tenure group; the x-axis is annual QDemo login volume. For <strong>newer</strong> and <strong>mid-tenure</strong> reps, attainment rises steadily with demo usage. For <strong>veterans</strong>, the line is flat-to-declining — more QDemo time buys them nothing. This is the core of the study: demo assets are an enablement lever for reps still building their craft, not for those who already have an established book.</p>
+      <div class="chart-wrap"><canvas id="doseChart"></canvas></div>
+      <p class="chart-note">% at quota by login bucket, within tenure group · n = 451 · 0-login reps included</p>
+      <div class="callout"><i class="ti ti-trending-up"></i><span>Newer reps (≤2 yrs) climb <strong>30% → 40% → 47%</strong> across the 0–5, 6–30, and 31+ login buckets. Veterans go <strong>37% → 26% → 25%</strong> — no upward slope. Same product, opposite payoff by tenure.</span></div>
+
+      <details class="collapse-detail" ontoggle="if(this.open && !charts.tenure) mkTenure()">
+        <summary><i class="ti ti-chevron-right"></i>Tenure detail — per-band correlation table &amp; chart</summary>
+        <div class="cd-body">
+      <p class="section-lede">The within-group correlation between login volume and Total Attainment, computed on continuous attainment (so it is unaffected by the smaller ramped quotas newer reps carry). The relationship is significant in the ≤1 and 1–2 year bands and fades to zero by 4+ years.</p>
+      <div class="chart-wrap"><canvas id="tenureChart"></canvas></div>
+      <p class="chart-note">login~attainment Spearman ρ (line) and % at quota (bars) by tenure band</p>
+      <table class="tier-table" style="margin-top:.5rem">
+        <thead><tr><th>Tenure</th><th>Reps</th><th>% at quota</th><th>Avg logins</th><th>Login~attainment ρ</th><th>p</th></tr></thead>
+        <tbody><tr class="hot"><td>≤1 yr</td><td>84</td><td>50.0%</td><td>25.5</td><td><span class="trend-badge trend-pos-strong">ρ +0.27 *</span></td><td style='color:#888780'>0.010</td></tr><tr class="hot"><td>1–2 yrs</td><td>72</td><td>25.0%</td><td>39.1</td><td><span class="trend-badge trend-pos-strong">ρ +0.32 *</span></td><td style='color:#888780'>0.005</td></tr><tr><td>2–3 yrs</td><td>25</td><td>36.0%</td><td>42.3</td><td><span class="trend-badge trend-flat">ρ -0.02</span></td><td style='color:#888780'>0.935</td></tr><tr><td>3–4 yrs</td><td>98</td><td>32.7%</td><td>45.1</td><td><span class="trend-badge trend-flat">ρ +0.18</span></td><td style='color:#888780'>0.080</td></tr><tr><td>4+ yrs</td><td>172</td><td>29.7%</td><td>30.5</td><td><span class="trend-badge trend-flat">ρ +0.03</span></td><td style='color:#888780'>0.719</td></tr></tbody>
+      </table>
+      <div class="callout"><i class="ti ti-circle-check"></i><span><strong>Robustness:</strong> the 1–2 year cohort (n=72, none ramping, full quotas) shows ρ = 0.32, p 0.005. Restricting to all non-ramping reps still gives ρ = 0.14 (p 0.009). Because Total Attainment = Quota Relief ÷ Quota (verified exactly), the signal is not a quota-relief artifact.</span></div>
+      <div class="callout amber"><i class="ti ti-alert-triangle"></i><span><strong>One honest caveat.</strong> The ≤1-year group's high 50.0% at-quota rate is partly a prorated-quota effect — newer reps carry much smaller ramped targets, so clearing quota is mechanically easier. The durable, defensible part is the <em>within-cohort correlation</em> (more demo usage → higher attainment), not that absolute percentage.</span></div>
+      <p class="small-note">Editorial interpretation: QDemo's payoff concentrates in reps past onboarding but still building their playbook (~years 1–2), then fades. This argues for targeting demo enablement at the post-ramp window rather than a blanket rollout.</p>
+        </div>
+      </details>
+    </div>
+
+    
+    <!-- INTERVIEW EVIDENCE (complementary qualitative study) -->
+    <div id="tab-interview" class="panel">
+      <p class="section-lede">A separate 2025 study interviewed <strong>28 ramping reps</strong> — 18 high performers and 10 low performers (mean Total Attainment 2.54× vs 0.14×) — about what helped during onboarding. It is qualitative and small, but it lands on the <strong>same population this whole module is about: reps early in their tenure</strong>. Two different methods pointing the same way is the reason it earns a place here.</p>
+
+      <div class="seg-compare">
+        <div class="seg-card ent">
+          <div class="seg-title">High performers · n=18</div>
+          <div class="seg-row"><span class="lbl">Mean attainment</span><span class="val">2.54×</span></div>
+          <div class="seg-row"><span class="lbl">Used demo / solution repository</span><span class="val">72%</span></div>
+          <div class="seg-row"><span class="lbl">Cited getting in front of customers</span><span class="val">33%</span></div>
+        </div>
+        <div class="seg-card corp">
+          <div class="seg-title">Low performers · n=10</div>
+          <div class="seg-row"><span class="lbl">Mean attainment</span><span class="val">0.14×</span></div>
+          <div class="seg-row"><span class="lbl">Used demo / solution repository</span><span class="val">40%</span></div>
+          <div class="seg-row"><span class="lbl">Cited getting in front of customers</span><span class="val">0%</span></div>
+        </div>
+      </div>
+
+      <div class="callout"><i class="ti ti-link"></i><span><strong>Same window, second lens.</strong> The quantitative study finds QDemo's payoff concentrated in reps' first ~two years. Independently, this interview study finds that high-performing ramping reps drew on demo and solution content far more than their struggling peers — <strong>72% vs 40%</strong>. Different data, different method, same early-tenure conclusion.</span></div>
+
+      <div class="callout blue"><i class="ti ti-bulb"></i><span><strong>Our read (interpretation, not a study finding):</strong> high performers also far more often named <em>getting in front of customers themselves</em> as a driver of their success (33% vs 0%). We take that as a sign they were comfortable owning customer interactions — which in practice often includes demoing the product. The study did not measure demoing directly, so treat this as a supporting narrative, not evidence.</span></div>
+
+      <div class="callout amber"><i class="ti ti-alert-triangle"></i><span><strong>How much weight to give it.</strong> n = 28 interviews, so the usage gap is directional, <strong>not significant</strong> on its own (Fisher exact p = 0.125). The "repository" question covers demo content broadly — recordings and solution presentations — <strong>not QDemo logins specifically</strong>. And like the main study it is correlational. Use it to corroborate the tenure story and add a human voice to it, not as a standalone proof point.</span></div>
+
+      <p class="small-note">Source: 2025 Ramping Reps Study (interview "X factors" sheet). High = "BOB", low = "WOW"; figures computed from the interview responses.</p>
+    </div>
+
+
+    <!-- METHOD & TAKEAWAYS -->
+    <div id="tab-method" class="panel">
+      <div class="insight-grid">
+        <div class="insight-card highlight wide">
+          <div class="insight-icon" style="color:#0f6e56"><i class="ti ti-bulb"></i></div>
+          <div class="insight-title">Recommendation</div>
+          <div class="insight-body">Concentrate QDemo demo-asset enablement on reps in their <strong>first two years</strong>, and build demo usage into onboarding and post-ramp development. That is where usage and attainment move together. For tenured reps (4+ yrs), QDemo is not a quota lever — don't measure or push them on it for that purpose.</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-icon"><i class="ti ti-checklist"></i></div>
+          <div class="insight-title">Population &amp; join</div>
+          <div class="insight-body">AE+ES quota-carrying tiers only (451 reps). Joined to QDemo usage on work email (89% matched); reps absent from the engagement export are counted as 0 logins (50 reps), since that report only lists users with activity.</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-icon"><i class="ti ti-ruler-2"></i></div>
+          <div class="insight-title">Metric &amp; stats</div>
+          <div class="insight-body">Outcome is full-year <strong>Total Attainment</strong> (Quota Relief ÷ Quota; ≥1.0 = at quota). Correlations are Spearman ρ (rank-order, robust to right-skewed login counts); p-values via normal approximation given the sample size.</div>
+        </div>
+        <div class="insight-card wide">
+          <div class="insight-icon"><i class="ti ti-adjustments-check"></i></div>
+          <div class="insight-title">Why tenure, and what was ruled out</div>
+          <div class="insight-body">Across all reps the global correlation is weak (a blend of confounded subgroups). Cutting by tenure isolates a clean, robust signal. The newer-rep effect holds after excluding ramping reps and is not explained by quota relief. Region was examined and showed no reliable independent signal; it is omitted here.</div>
+        </div>
+      </div>
+      <p class="small-note">Generated by generate_report_v2.py from Software Sales 2025 Attainment Data.xlsx + the 2025 QDemo engagement export. Every figure is computed from source data — no hardcoded numbers.</p>
+    </div>
+
+  </div>
+  <p style="text-align:center;font-size:11px;color:#b4b2a9;margin-top:1rem">QDemo tenure study · full year 2025 · 451 AE/ES reps · generated from source data</p>
+</div>
+
+<script>
+const DOSE = {"labels": ["0\u20135", "6\u201330", "31+"], "series": [{"name": "Newer (\u22642 yrs)", "color": "#1d9e75", "pct": [29.6, 39.6, 46.9], "ns": [54, 53, 49]}, {"name": "Mid (2\u20134 yrs)", "color": "#185fa5", "pct": [25.9, 33.3, 36.5], "ns": [27, 33, 63]}, {"name": "Veteran (4+ yrs)", "color": "#b4b2a9", "pct": [37.3, 26.3, 25.0], "ns": [59, 57, 56]}]};
+const TENURE = {"labels": ["\u22641 yr", "1\u20132 yrs", "2\u20133 yrs", "3\u20134 yrs", "4+ yrs"], "rho": [0.273, 0.319, -0.017, 0.176, 0.028], "pct": [50.0, 25.0, 36.0, 32.7, 29.7], "ns": [84, 72, 25, 98, 172]};
+let charts = {};
+function showTab(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+// draws the % value next to every point, colored to its line
+const pointValues = {
+  id: 'pointValues',
+  afterDatasetsDraw(chart) {
+    const ctx = chart.ctx;
+    chart.data.datasets.forEach((ds, i) => {
+      const meta = chart.getDatasetMeta(i);
+      if (meta.hidden) return;
+      meta.data.forEach((pt, idx) => {
+        const v = ds.data[idx];
+        if (v == null) return;
+        ctx.save();
+        ctx.font = '700 13px -apple-system,BlinkMacSystemFont,sans-serif';
+        ctx.fillStyle = ds.borderColor;
+        ctx.textAlign = 'center';
+        ctx.fillText(Math.round(v) + '%', pt.x, pt.y + (ds._labelDY || -12));
+        ctx.restore();
+      });
+    });
+  }
+};
+function mkDose() {
+  const ctx = document.getElementById('doseChart');
+  const STYLE = {
+    'Newer (≤2 yrs)':   { width: 4,   dash: [],     pr: 7, dy: -14, order: 0 },
+    'Mid (2–4 yrs)':    { width: 2,   dash: [],     pr: 5, dy: -14, order: 1 },
+    'Veteran (4+ yrs)': { width: 2.5, dash: [7, 5], pr: 5, dy:  20, order: 2 }
+  };
+  charts.dose = new Chart(ctx, {
+    type: 'line',
+    data: { labels: DOSE.labels, datasets: DOSE.series.map(s => {
+      const st = STYLE[s.name] || { width: 2.5, dash: [], pr: 5, dy: -12, order: 1 };
+      return {
+        label: s.name + ' (n=' + s.ns.reduce((a,b)=>a+b,0) + ')',
+        data: s.pct, borderColor: s.color, backgroundColor: s.color,
+        borderWidth: st.width, borderDash: st.dash,
+        pointRadius: st.pr, pointHoverRadius: st.pr + 2,
+        pointBackgroundColor: '#fff', pointBorderColor: s.color, pointBorderWidth: 2.5,
+        tension: .25, order: st.order, _ns: s.ns, _labelDY: st.dy
+      };
+    }) },
+    options: { responsive: true, maintainAspectRatio: false,
+      layout: { padding: { top: 22, right: 12 } },
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 14, usePointStyle: true, font: { size: 12 } } },
+        tooltip: { callbacks: { label: c => c.dataset.label.replace(/ \(n=.*/,'') + ': ' + c.parsed.y + '% at quota  (n=' + c.dataset._ns[c.dataIndex] + ')' } } },
+      scales: { y: { beginAtZero: true, suggestedMax: 56, ticks: { callback: v => v + '%' }, title: { display: true, text: '% of reps at quota' }, grid: { color: '#f1efe8' } },
+                 x: { title: { display: true, text: 'Annual QDemo logins' }, grid: { display: false } } } },
+    plugins: [pointValues]
+  });
+}
+function mkTenure() {
+  const ctx = document.getElementById('tenureChart');
+  charts.tenure = new Chart(ctx, {
+    data: { labels: TENURE.labels, datasets: [
+      { type: 'bar', label: '% at quota', data: TENURE.pct, backgroundColor: '#cfe8f7', borderRadius: 5, maxBarThickness: 54, yAxisID: 'y', order: 2 },
+      { type: 'line', label: 'login~attainment ρ', data: TENURE.rho, borderColor: '#1d9e75', backgroundColor: '#1d9e75', borderWidth: 2.5, pointRadius: 5, tension: .2, yAxisID: 'y1', order: 1 }
+    ] },
+    options: { responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } },
+        tooltip: { callbacks: { label: c => c.dataset.type === 'bar'
+          ? c.parsed.y + '% at quota  (n=' + TENURE.ns[c.dataIndex] + ')'
+          : 'ρ = ' + c.parsed.y } } } },
+      scales: { y: { beginAtZero: true, position: 'left', ticks: { callback: v => v + '%' }, title: { display: true, text: '% at quota' } },
+                 y1: { position: 'right', suggestedMin: -0.1, suggestedMax: 0.4, grid: { drawOnChartArea: false }, title: { display: true, text: 'Spearman ρ' } } } }
+  });
+}
+mkDose();
+</script>
+</body>
+</html>
